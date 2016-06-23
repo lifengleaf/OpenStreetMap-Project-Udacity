@@ -1,0 +1,9 @@
+Reference Website:
+1. https://wiki.openstreetmap.org/wiki/Main_Page
+2. https://gist.github.com/carlward/54ec1c91b62a5f911c42#file-sample_project-md
+3. http://dev.mysql.com/doc/refman/5.7/en/load-data.html
+4. http://www.unitedstateszipcodes.org/zip-code-database/
+5. https://github.com/zelite/Wrangle-OpenStreetMap-Data/blob/master/API_v0.6.xsd
+6. http://www.w3schools.com/sql/default.asp
+7. https://mapzen.com/data/metro-extracts/
+8. https://discussions.udacity.com/t/case-study-last-problem-preparing-for-database/23645/3
