@@ -97,7 +97,7 @@ def audit_postcode(filename):
                         tag.attrib['v'] = tag.attrib['v'].split('-')[0]
                     code_list.add(tag.attrib['v'])               
     print 'There are', long_code, 'long post codes.'
-    return [code for code in code_list if code not in phoenix_zipcode_str]  
+    return [code for code in code_list if code not in phoenix_zipcode_str]      
                     
 
 def audit_phone(filename):
@@ -109,8 +109,47 @@ def audit_phone(filename):
                 if (tag.attrib['k'] == "phone") or (tag.attrib['k'] == "contact:phone"):
                     phone_list.append(tag.attrib['v']) 
     return phone_list
+ 
+# standard format: XXX-XXX-XXXX or 1-XXX-XXX-XXXX 
+def fix_phone(phone):
+    # first deal with strings with no separators
+    if re.compile(r'^(\d{3})(\d{3})(\d{4})$').search(phone):
+        # XXXXXXXXXX 
+        return phone[:3] + '-' + phone[3:6] + '-' + phone[6:]
+    elif re.compile(r'^1(\d{10})$').search(phone):           
+       # 1XXXXXXXXXX
+        return phone[1:4] + '-' + phone[4:7] + '-' + phone[7:]
+    elif re.compile(r'^\+1(\d{10})$').search(phone):           
+       # +1XXXXXXXXXX
+        return phone[2:5] + '-' + phone[5:8] + '-' + phone[8:]
+    elif re.compile(r'^\+1\s(\d{10})$').search(phone):           
+       # +1 XXXXXXXXXX
+        return phone[3:6] + '-' + phone[6:9] + '-' + phone[9:]
+    elif re.compile(r'^\+1\s(\d{3})\s(\d{3})(\d{4})$').search(phone):
+        # +1 XXX XXXXXXX
+        return phone[3:6] + '-' + phone[7:10]+ '-' + phone[10:]
+    elif re.compile(r'^01\s(\d{3})\s(\d{3})\s(\d{4})$').search(phone):
+        # 01 XXX XXX XXXX 
+        return phone[3:].replace(' ', '-')
+    
+    # if more than one number in the string, split to a list    
+    elif phone.find(';') > 0:
+        for ph in phone.split(';'):
+            fix_phone(ph) 
+            
+    # if there are 3 or 4 digital parts, concatenate with dash 
+    elif len(re.findall('\d+', phone)) >2:
+        return '-'.join(re.findall('\d+', phone))
+        
+    else:
+        print phone
 
-
+   
+def fix_phones(phone_list):
+    for phone in phone_list:
+        fix_phone(phone)
+  
+    
 # validate the XML OSM file using the provided schema            
 # reference: https://discussions.udacity.com/t/p3-auditing-validity/37922/7?u=josear            
 def validator(filename, schema):
